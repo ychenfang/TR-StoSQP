@@ -77,7 +77,6 @@ function TRStoSQPLogit(Z, y, A, b, beta, zeta, mu_1, rho, batchsize, Max_Epoch, 
     Lipf = norm(f_trial-f_k)/norm(eps_x)+1
 
         while KKT[end]>EPS_Res && k<Max_Iter
-            println(KKT[end])
         ## Obtain est of gradient of Lagrange
         # stochastic gradient:
             # select a subset:
