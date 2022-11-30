@@ -201,6 +201,6 @@ function TRStoSQPLogit(Z, y, A, b, beta, zeta, mu_1, rho, batchsize, Max_Epoch, 
     if k < Max_Iter
         return KKT[end], 1, 0
     else
-        return [], 0, 1
+        return [], 0, 0
     end
 end
