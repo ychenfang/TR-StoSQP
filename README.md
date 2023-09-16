@@ -2,7 +2,7 @@
 
 This respository reproduces the numerical results of the paper [Fully Stochastic Trust-Region Sequential Quadratic Programming for Equality-Constrained Optimization Problems](https://arxiv.org/abs/2211.15943). 
 
-We implement TR-StoSQP method to solve (1) 10 probblems with equality constraints from CUTEst test set, and (2) 8 Logistic regression problems with equality constraints using data from LIBSVM collection.
+We implement TR-StoSQP method to solve (1) 47 probblems with equality constraints from CUTEst test set, and (2) 8 Logistic regression problems with equality constraints using data from LIBSVM collection.
 
 The setup of CUTEst is available at [https://github.com/JuliaSmoothOptimizers/CUTEst.jl.](https://github.com/JuliaSmoothOptimizers/CUTEst.jl.)
 
