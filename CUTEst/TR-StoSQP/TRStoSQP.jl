@@ -19,7 +19,7 @@
 ### IdSing: indicator of singularity
 
 include("sr1.jl")
-function TRStoSQP(nlp, beta, zeta, mu_1, rho, sigma, Max_Iter, EPS_Res, IdConst, IdB_k)
+function TRStoSQP(nlp, beta, zeta, ddelta, mu_1, rho, sigma, Max_Iter, EPS_Res, IdConst, IdB_k)
 
     nx = nlp.meta.nvar
     nlam = nlp.meta.ncon
@@ -101,10 +101,13 @@ function TRStoSQP(nlp, beta, zeta, mu_1, rho, sigma, Max_Iter, EPS_Res, IdConst,
                 end
             end
 
+            ## Compute \bv_k:
+            v_k = -G_k'* P0*c_k
+
             # compute control parameters
-            eta1 = zeta * min(1/norm(B_k), 6*beta_max/norm(G_k))
+            eta1 = zeta * norm(v_k)/norm(c_k)
             tau_k = Lipf + LipG * mu + norm(B_k)
-            alpha_k = beta_k/((4*eta1*tau_k+6*zeta)*beta_max)
+            alpha_k = beta_k/((4*eta1*tau_k+4*zeta)*beta_max)
             eta2 = eta1 - 1/2 * zeta * eta1 * alpha_k
 
             ## Generate trust region radius:
@@ -120,35 +123,57 @@ function TRStoSQP(nlp, beta, zeta, mu_1, rho, sigma, Max_Iter, EPS_Res, IdConst,
             end
 
         ## Decompose trust region radius:
+        c_krs = c_k/norm(G_k)
+        bnab_xL_krs  = bnab_xL_k/norm(B_k)
+        bKKTrs = norm([bnab_xL_krs; c_krs])
         ## check_delta_k:
-            ck_delta_k = norm(c_k)/bKKT*delta_k
+            ck_delta_k = norm(c_krs)/bKKTrs*delta_k
         ## tilde_delta_k:
-            td_delta_k = norm(bnab_xL_k)/bKKT*delta_k
-        ## Compute \bv_k:
-            v_k = -G_k'* P0*c_k
+            td_delta_k = norm(bnab_xL_krs)/bKKTrs*delta_k
+
         ## Select \gamma_k:
-            gamma_k = min(ck_delta_k/norm(v_k),1)
+            gamma_ktrial = min(ck_delta_k/norm(v_k),1)
+
+        phi_k = min(norm(B_k)/norm(G_k),1)
+
+        lowerbd = 1/2*zeta*phi_k*alpha_k
+
+        upperbd = lowerbd + ddelta*alpha_k^2
+
+        if gamma_ktrial <= lowerbd
+            gamma_k = lowerbd
+        elseif gamma_ktrial >= upperbd
+            gamma_k = upperbd
+        else
+            gamma_k = gamma_ktrial
+
         # Compute P_k:
             P_k = Diagonal(ones(nx))-G_k'* P0 * G_k
+
+            # Compute Z_k:
+            dense_G_k = Matrix(G_k')
+            Q_k, = qr(dense_G_k)
+            Z_k = Q_k[:,nlam+1:nx]
+            nu=nx-nlam
 
         ## Compute \bu_k:
             m = Model(Ipopt.Optimizer);
             set_silent(m)
-            @variable(m, u[1:nx]);
-            @objective(m, Min, bnabf_k' * P_k * u + 1/2 * u' * P_k * B_k * P_k * u);
+            @variable(m, u[1:nu]);
+            @objective(m, Min, (bnabf_k+gamma_k*B_k*v_k)' *Z_k * u + 1/2 * u' * Z_k' * B_k * Z_k * u);
             @constraint(m,u'*u <= td_delta_k^2)
             optimize!(m);
             u_k=Float64[];
-            for i=1:nx
+            for i=1:nu
               push!(u_k, callback_value(m,u[i]))
             end
 
         ## Compute the trial step:
-            deltax_k = gamma_k*v_k + P_k*u_k
+            deltax_k = gamma_k*v_k + Z_k*u_k
 
         # compute predicted reduction:
             pred_k = bnabf_k'*deltax_k + 1/2*deltax_k'*B_k*deltax_k + mu*(norm(c_k + G_k*deltax_k)-norm(c_k))
-            lower_bd_pred_k = -norm(bnab_xL_k)*td_delta_k - 1/2*norm(c_k)*ck_delta_k + 1/2*td_delta_k^2*norm(B_k) + norm(B_k)*td_delta_k*ck_delta_k
+            lower_bd_pred_k = -norm(bKKT)*delta_k + 1/2*norm(B_k)*delta_k^2
             # update mu
             while pred_k > lower_bd_pred_k
                 if mu > 1e4

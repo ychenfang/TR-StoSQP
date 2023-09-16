@@ -27,6 +27,7 @@ function TRStoSQPMain(TRSto, Prob)
     BetaCSet = TRSto.constbeta
     BetaDSet = TRSto.decaybeta
     zeta = TRSto.zeta
+    ddelta = TR.Sto.ddelta
     mu_1 = TRSto.mu_1
     rho = TRSto.rho
     Max_Iter = TRSto.MaxIter
@@ -57,7 +58,7 @@ function TRStoSQPMain(TRSto, Prob)
                rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Const-SR1","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res,1,1)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res,1,1)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -86,7 +87,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Const-Id","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 1, 0)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 1, 0)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -116,7 +117,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Const-EstH","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 1, 2)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 1, 2)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -144,7 +145,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Const-AveH","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 1, 3)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaCSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 1, 3)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -173,7 +174,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Decay-Id","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 0)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 0)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -201,7 +202,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Decay-SR1","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 1)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 1)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -229,7 +230,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Decay-EstH","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 2)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 2)
                     if IdSing == 1
                         break
                     elseif IdCon == 0
@@ -257,7 +258,7 @@ function TRStoSQPMain(TRSto, Prob)
                 rep = 1
                 while rep <= TotalRep
                     println("TRStoSQP Decay-AveH","-",Idprob,"-",i,"-",j,"-",rep)
-                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 3)
+                    KKT, Portion, IdCon, IdSing = TRStoSQP(nlp, BetaDSet[i], zeta, ddelta, mu_1, rho, Sigma[j], Max_Iter, EPS_Res, 0, 3)
                     if IdSing == 1
                         break
                     elseif IdCon == 0

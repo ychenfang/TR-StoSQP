@@ -32,6 +32,7 @@ module Parameter
         constbeta::Array{Float64}          # constant radius-related sequence
         decaybeta::Array{Float64}          # decay radius-related sequence 1/(k^p),0.5<p<1
         zeta::Float64                      # zeta
+        ddelta::Float64                    # delta
         mu_1::Float64                      # mu_{-1}
         rho::Float64                       # rho
         MaxIter::Int                       # Maximum Iteration
